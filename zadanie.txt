@@ -1,0 +1,144 @@
+Oto pomysł na program w Pythonie, który umożliwia ćwiczenie programowania obiektowego na klasach:
+Symulacja Sklepu Internetowego
+Opis:
+Stworzymy symulację sklepu internetowego, w którym użytkownicy mogą przeglądać produkty, dodawać je do koszyka i dokonywać zakupów. Program będzie zarządzał katalogiem produktów, koszykami użytkowników oraz zamówieniami.
+
+Wymagania:
+Klasa Produkt:
+Atrybuty: nazwa, cena, ilość dostępna, identyfikator.
+Metody: wyświetlanie informacji o produkcie.
+
+Klasa Koszyk:
+Atrybuty: lista produktów (i ich ilości), właściciel koszyka.
+Metody: dodaj produkt, usuń produkt, wyświetl zawartość koszyka, oblicz wartość koszyka.
+
+Klasa Użytkownik:
+Atrybuty: imię, nazwisko, identyfikator użytkownika, koszyk.
+Metody: przeglądaj produkty, dodaj do koszyka, usuń z koszyka, dokonaj zakupu.
+
+Klasa Sklep:
+Atrybuty: lista wszystkich produktów, lista użytkowników.
+Metody: dodaj produkt, usuń produkt, zarejestruj użytkownika, znajdź produkt po nazwie/identyfikatorze.
+
+
+Przykładowa Implementacja:
+python
+Skopiuj kod
+class Produkt:
+    def __init__(self, nazwa, cena, ilosc, id_produktu):
+        self.nazwa = nazwa
+        self.cena = cena
+        self.ilosc = ilosc
+        self.id_produktu = id_produktu
+
+    def wyswietl_informacje(self):
+        print(f"Produkt: {self.nazwa}, Cena: {self.cena} PLN, Ilość: {self.ilosc}, ID: {self.id_produktu}")
+
+
+class Koszyk:
+    def __init__(self, wlasciciel):
+        self.wlasciciel = wlasciciel
+        self.produkty = []
+
+    def dodaj_produkt(self, produkt, ilosc):
+        self.produkty.append((produkt, ilosc))
+        print(f"Dodano {ilosc} x {produkt.nazwa} do koszyka {self.wlasciciel}")
+
+    def usun_produkt(self, produkt):
+        self.produkty = [(p, ilosc) for p, ilosc in self.produkty if p != produkt]
+        print(f"Usunięto {produkt.nazwa} z koszyka {self.wlasciciel}")
+
+    def wyswietl_zawartosc(self):
+        print(f"Zawartość koszyka {self.wlasciciel}:")
+        for produkt, ilosc w self.produkty:
+            print(f"{produkt.nazwa}: {ilosc} x {produkt.cena} PLN = {ilosc * produkt.cena} PLN")
+
+    def oblicz_wartosc(self):
+        return sum(ilosc * produkt.cena for produkt, ilosc w self.produkty)
+
+
+class Uzytkownik:
+    def __init__(self, imie, nazwisko, id_uzytkownika):
+        self.imie = imie
+        self.nazwisko = nazwisko
+        self.id_uzytkownika = id_uzytkownika
+        self.koszyk = Koszyk(f"{imie} {nazwisko}")
+
+    def przegladanie_produktow(self, sklep):
+        print(f"Produkty dostępne w sklepie {sklep.nazwa}:")
+        for produkt in sklep.produkty:
+            produkt.wyswietl_informacje()
+
+    def dodaj_do_koszyka(self, produkt, ilosc):
+        if produkt.ilosc >= ilosc:
+            self.koszyk.dodaj_produkt(produkt, ilosc)
+            produkt.ilosc -= ilosc
+        else:
+            print(f"Niewystarczająca ilość produktu: {produkt.nazwa}")
+
+    def usun_z_koszyka(self, produkt):
+        self.koszyk.usun_produkt(produkt)
+
+    def dokonaj_zakupu(self):
+        wartosc = self.koszyk.oblicz_wartosc()
+        print(f"Zakup zrealizowany przez {self.imie} {self.nazwisko}. Łączna wartość: {wartosc} PLN")
+        self.koszyk = Koszyk(f"{self.imie} {self.nazwisko}")
+
+
+class Sklep:
+    def __init__(self, nazwa):
+        self.nazwa = nazwa
+        self.produkty = []
+        self.uzytkownicy = []
+
+    def dodaj_produkt(self, produkt):
+        self.produkty.append(produkt)
+        print(f"Dodano produkt: {produkt.nazwa}")
+
+    def usun_produkt(self, produkt):
+        self.produkty = [p for p in self.produkty if p != produkt]
+        print(f"Usunięto produkt: {produkt.nazwa}")
+
+    def zarejestruj_uzytkownika(self, uzytkownik):
+        self.uzytkownicy.append(uzytkownik)
+        print(f"Zarejestrowano użytkownika: {uzytkownik.imie} {uzytkownik.nazwisko}")
+
+    def znajdz_produkt(self, id_produktu):
+        for produkt in self.produkty:
+            if produkt.id_produktu == id_produktu:
+                return produkt
+        return None
+
+# Przykładowe użycie:
+sklep = Sklep("Sklep Internetowy")
+
+# Dodawanie produktów
+produkt1 = Produkt("Laptop", 3000, 10, 1)
+produkt2 = Produkt("Smartfon", 2000, 20, 2)
+sklep.dodaj_produkt(produkt1)
+sklep.dodaj_produkt(produkt2)
+
+# Rejestracja użytkowników
+uzytkownik1 = Uzytkownik("Anna", "Nowak", 1)
+sklep.zarejestruj_uzytkownika(uzytkownik1)
+
+# Przeglądanie produktów
+uzytkownik1.przegladanie_produktow(sklep)
+
+# Dodawanie do koszyka
+uzytkownik1.dodaj_do_koszyka(produkt1, 2)
+uzytkownik1.koszyk.wyswietl_zawartosc()
+
+# Usuwanie z koszyka
+uzytkownik1.usun_z_koszyka(produkt1)
+uzytkownik1.koszyk.wyswietl_zawartosc()
+
+# Dokonywanie zakupu
+uzytkownik1.dodaj_do_koszyka(produkt2, 1)
+uzytkownik1.koszyk.wyswietl_zawartosc()
+uzytkownik1.dokonaj_zakupu()
+Cele edukacyjne:
+Ćwiczenie definiowania i używania klas oraz metod.
+Praktyka w zarządzaniu obiektami i ich interakcjami.
+Praca z listami i operacjami na nich.
+Symulowanie rzeczywistych scenariuszy i problemów do rozwiązania za pomocą kodu.
